@@ -10,11 +10,6 @@ on:
         required: true
         type: choice
         options: [MTK-7981, MTK-7986]
-      SOURCE:
-        default: 'hanwckf/immortalwrt-mt798x'
-        required: true
-        type: choice
-        options: [hanwckf/immortalwrt-mt798x, padavanonly/immortalwrt-mt798x]
       FEEDS:
         description: 'luci packages软件源'
         default: 'lgs2007m'
@@ -32,7 +27,7 @@ on:
         required: true
         default: 'v7.6.7.2-fw-20240823(recommend)'
         type: choice
-        options: [v7.6.7.2-fw-20240823(recommend), v7.6.6.1-fw-20230306(recommend), v7.6.7.2-fw-default, v7.6.6.1-fw-default, v7.6.6.1-fw-20230330, v7.6.6.1-fw-20230411, v7.6.6.1-fw-20230717, v7.6.6.1-fw-20231024]
+        options: [v7.6.7.2-fw-20240823(recommend), v7.6.6.1-fw-20230306(recommend), v7.6.7.2-fw-default, v7.6.7.2-fw-20230306, v7.6.7.2-fw-20230330, v7.6.7.2-fw-20230411, v7.6.7.2-fw-20230717, v7.6.7.2-fw-20231024, v7.6.6.1-fw-default, v7.6.6.1-fw-20230330, v7.6.6.1-fw-20230411, v7.6.6.1-fw-20230717, v7.6.6.1-fw-20231024]
       EEPROM:
         description: 'eeprom+固定MAC'  #off不使用高功率eeprom
         required: true
@@ -75,7 +70,7 @@ jobs:
       WRT_WIFI: ${{inputs.WIFI}}
       WRT_IP: 192.168.2.1
       WRT_PW: 无
-      WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
+      WRT_REPO: https://github.com/hanwckf/immortalwrt-mt798x.git
       WRT_BRANCH: openwrt-21.02
       WRT_PACKAGE: ${{inputs.PACKAGE}}
       WRT_ADJUST: ${{inputs.ADJUST}}
@@ -201,19 +196,10 @@ jobs:
               sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/lgs2007m/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
               echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
           fi
-          # 根据源码SOURCE内容选择补丁或者操作
-          if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
-            #cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
-            #git apply xr30-xr30emmc_padavanonly.patch
-            #删除usb拨号 或者加入汉化usb拨号
-            rm -rf ./package/wwan/app/luci-app-usbmodem
-            #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
-          fi
            
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
           
-
       - name: 自定义包
         run: |
           cd ./wrt/package/
@@ -237,6 +223,9 @@ jobs:
               cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config
               echo "使用360t7配置文件"
           fi
+
+          echo "CONFIG_MTK_MT_WIFI_DRIVER_VERSION_7672=y" >> ./.config
+          echo "CONFIG_MTK_MT_WIFI_MT7986_20240823=y=y" >> ./.config
           $GITHUB_WORKSPACE/Scripts/Settings.sh
           #取消mtwifi配置
           if [[ $USE_MTWIFI_CFG == "false" ]] ; then
@@ -269,51 +258,40 @@ jobs:
           
       - name: 设置WiFi驱动版本
         run: |
-          cd ./wrt
-          wifi_driver=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^(v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-          firmware=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^.*-fw-([0-9]{8}).*/\1/')
-          if [ "$wifi_driver" == "v7.6.6.1" ]; then
-              sed -i 's/CONFIG_MTK_MT_WIFI_DRIVER_VERSION_7672=y/CONFIG_MTK_MT_WIFI_DRIVER_VERSION_7661=y/g' .config
-              if [ "$firmware" != "default" ]; then
-                  sed -i "/CONFIG_MTK_MT_WIFI_DRIVER_VERSION/a CONFIG_MTK_MT_WIFI_MT7981_${firmware}=y" .config
-              fi
-          else
-              if [ "$firmware" != "default" ]; then
-                  cp $GITHUB_WORKSPACE/Config/all/mt79xx_20231229-4012a0_mt7981-fw-20240823.tar.xz dl/mt79xx_20231229-4012a0.tar.xz
-              fi
-          fi
-          echo "Use WiFi Driver: $wifi_driver-fw-$firmware"
+            cd ./wrt/            
+            wifi_driver=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^(v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            firmware=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/.*fw-([0-9]{8}|default).*/\1/g')
+            if [ "$wifi_driver" == "v7.6.6.1" ]; then
+                  sed -i 's/CONFIG_MTK_MT_WIFI_DRIVER_VERSION_7672=y/CONFIG_MTK_MT_WIFI_DRIVER_VERSION_7661=y/g' .config
+            fi
+            if [ "$firmware" == "default" ]; then
+                  sed -i 's/CONFIG_MTK_MT_WIFI_MT7981_20240823=y/CONFIG_MTK_MT_WIFI_MT7981_DEFAULT_FIRMWARE=y/g' .config
+            else
+                  sed -i 's/CONFIG_MTK_MT_WIFI_MT7981_20240823=y/CONFIG_MTK_MT_WIFI_MT7981_${firmware}=y/g' .config
+            fi
+            echo "Use WiFi Driver: $wifi_driver-fw-$firmware"
 
-      - name: 使用高功率eeprom并固定WiFi MAC地址
-        if: env.USE_EEPROM != 'off_false'
+      - name: 使用nx30pro的高功率eeprom并固定WiFi MAC地址
+        if: github.event.inputs.EEPROM == 'true'
         run: |
-          cd ./wrt
-          wifi_driver=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^(v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-          firmware=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^.*-fw-([0-9]{8}).*/\1/')
-          if [ "$wifi_driver" == "v7.6.6.1" ]; then
-              cp $GITHUB_WORKSPACE/Config/all/"$USE_EEPROM"..bin package/mtk/drivers/mt_wifi/files-7661/bin/mt7981/rebb/MT7981_iPAiLNA_EEPROM.bin
-          else
-              if [ "$firmware" != "default" ]; then
-                  cp $GITHUB_WORKSPACE/Config/all/mt79xx_20231229-4012a0_mt7981-fw-20240823_eeprom.tar.xz dl/mt79xx_20231229-4012a0.tar.xz
-              else                
+            cd ./wrt/
+            wifi_driver=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^(v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            if [ "$wifi_driver" == "v7.6.6.1" ]; then
+                  cp $GITHUB_WORKSPACE/Config/all/"$USE_EEPROM".bin package/mtk/drivers/mt_wifi/files-7661/bin/mt7981/rebb/MT7981_iPAiLNA_EEPROM.bin
+            else
                   cp $GITHUB_WORKSPACE/Config/all/mt79xx_20231229-4012a0_eeprom.tar.xz dl/mt79xx_20231229-4012a0.tar.xz
-              fi
-          fi
-          ## 创建一个辅助文件。文件内容是写入MAC地址到dat文件，固定wifi MAC地址
-          echo -e "\t\tlocal wifi0_mac=\"\$(mmc_get_mac_binary factory 0x04)\"
-          \t\tsed -i \"/^MacAddress=.*/ {s/.*/MacAddress=\$wifi0_mac/;b;}; \\\$aMacAddress=\$wifi0_mac\" /etc/wireless/mediatek/mt7981.dbdc.b0.dat
-          \t\tlocal wifi1_mac=\"\$(macaddr_setbit_la \$wifi0_mac)\"
-          \t\tsed -i \"/^MacAddress=.*/ {s/.*/MacAddress=\$wifi1_mac/;b;}; \\\$aMacAddress=\$wifi1_mac\" /etc/wireless/mediatek/mt7981.dbdc.b1.dat" > temp_insert.txt
-          ## 将文本内容写入02_network
-          sed -i '/mediatek_setup_macs()/,/\};/ {/cmcc,rax3000m-emmc)/ {n;n;n;r temp_insert.txt
-          }}' target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
-              
+            fi
+            # 创建一个辅助文件。文件内容是写入MAC地址到dat文件，固定wifi MAC地址
+            echo -e "\t\tlocal wifi0_mac=\"\$(mmc_get_mac_binary factory 0x04)\"\n\t\tsed -i \"/^MacAddress=.*/ {s/.*/MacAddress=\$wifi0_mac/;b;}; \\\$aMacAddress=\$wifi0_mac\" /etc/wireless/mediatek/mt7981.dbdc.b0.dat\n\t\tlocal wifi1_mac=\"\$(macaddr_setbit_la \$wifi0_mac)\"\n\t\tsed -i \"/^MacAddress=.*/ {s/.*/MacAddress=\$wifi1_mac/;b;}; \\\$aMacAddress=\$wifi1_mac\" /etc/wireless/mediatek/mt7981.dbdc.b1.dat" > temp_insert.txt
+            # 将文本内容写入02_network
+            sed -i '/mediatek_setup_macs()/,/\};/ {/cmcc,rax3000m-emmc)/ {n;n;n;r temp_insert.txt
+            }}' target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
+
       - name: 设置 dockerman 容器
         if: env.USE_DOCKER == 'true'
         run: |
-          cd ./wrt/
-          echo -e "\nCONFIG_PACKAGE_luci-app-dockerman=y" >> .config
-
+            cd ./wrt/
+            echo -e "\nCONFIG_PACKAGE_luci-app-dockerman=y" >> .config
 
       - name: 下载文件
         if: env.WRT_TEST != 'true'
