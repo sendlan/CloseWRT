@@ -10,12 +10,6 @@ on:
         required: true
         type: choice
         options: [MTK-7981, MTK-7986]
-      SOURCE:
-        description: '源码'
-        default: 'padavanonly/immortalwrt-mt798x'
-        required: true
-        type: choice
-        options: [hanwckf/immortalwrt-mt798x, padavanonly/immortalwrt-mt798x]
       FEEDS:
         description: 'luci packages软件源'
         default: 'lgs2007m'
@@ -70,7 +64,7 @@ jobs:
       WRT_WIFI: ${{inputs.WIFI}}
       WRT_IP: 192.168.2.1
       WRT_PW: 无
-      WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
+      WRT_REPO: https://github.com/padavanonly/immortalwrt-mt798x.git
       WRT_BRANCH: openwrt-21.02
       WRT_PACKAGE: ${{inputs.PACKAGE}}
       WRT_ADJUST: ${{inputs.ADJUST}}
@@ -197,16 +191,13 @@ jobs:
               sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/lgs2007m/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
               echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
           fi
-          # 根据源码SOURCE内容选择补丁或者操作
-          if [[ "${{inputs.SOURCE}}" == "padavanonly/immortalwrt-mt798x" ]]; then
-            #cp $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/cmcc-xr30_xr30-emmc.patch xr30-xr30emmc_padavanonly.patch
-            #git apply xr30-xr30emmc_padavanonly.patch
+
             cp $GITHUB_WORKSPACE/Config/all/xr30-xr30emmc.diff xr30-xr30emmc.diff
             git apply xr30-xr30emmc.diff
             #删除usb拨号 或者加入汉化usb拨号
             #rm -rf ./package/wwan/app/luci-app-usbmodem
-            #sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
-          fi          
+            sed -i 's/luci-app-usbmodem/luci-app-usbmodem luci-i18n-usbmodem-zh-cn/g' target/linux/mediatek/image/mt7981.mk
+                    
           ./scripts/feeds update -a
           ./scripts/feeds install -a                   
 
@@ -220,8 +211,7 @@ jobs:
       - name: 自定义设置
         run: |
           cd ./wrt/
-          rm -rf ./tmp* ./.config*
-          
+          rm -rf ./tmp* ./.config*        
           if [[ $WRT_USB_EMMC == "xr30" ]] ; then
               rm -rf ./tmp* ./.config*
               cat $GITHUB_WORKSPACE/Config/xr30_rax3000m/xr30_rax3000m.config >> .config                       
@@ -235,6 +225,7 @@ jobs:
               cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config
               echo "使用360t7配置文件"
           fi
+          echo "CONFIG_MTK_MT7981_NEW_FW=y" >> ./.config
           $GITHUB_WORKSPACE/Scripts/Settings.sh
           #取消mtwifi配置
           if [[ $USE_MTWIFI_CFG == "false" ]] ; then
@@ -268,7 +259,6 @@ jobs:
       - name: 使用的高功率eeprom并固定WiFi MAC地址
         if: env.USE_EEPROM != 'off_false'
         run: |
-          
           ls ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom
           cp ./Config/all/"$USE_EEPROM".bin ./wrt/package/mtk/drivers/mt_wifi/files/mt7981-default-eeprom/MT7981_iPAiLNA_EEPROM.bin
           ## 创建一个辅助文件。文件内容是写入MAC地址到dat文件，固定wifi MAC地址
@@ -279,14 +269,12 @@ jobs:
           ## 将文本内容写入02_network
           sed -i '/mediatek_setup_macs()/,/\};/ {/cmcc,rax3000m-emmc)/ {n;n;n;r temp_insert.txt
           }}' ./wrt/target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
-
-          
+        
       - name: 设置 dockerman 容器
         if: env.USE_DOCKER == 'true'
         run: |
           cd ./wrt/
           echo -e "\nCONFIG_PACKAGE_luci-app-dockerman=y" >> .config
-
 
       - name: 下载文件
         if: env.WRT_TEST != 'true'
