@@ -58,7 +58,6 @@ CONFIG_PACKAGE_luci-app-adguardhome=y
 
 ##---------下面默认配置不建议修改-------------
 
-#CONFIG_MTK_MT7981_NEW_FW=y
 
 # 取消插件
 CONFIG_MODULE_DEFAULT_luci-app-samba4=n
