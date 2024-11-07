@@ -272,7 +272,7 @@ jobs:
             echo "Use WiFi Driver: $wifi_driver-fw-$firmware"
 
       - name: 使用nx30pro的高功率eeprom并固定WiFi MAC地址
-        if: github.event.inputs.EEPROM == 'true'
+        if: env.USE_EEPROM != 'off_false'
         run: |
             cd ./wrt/
             wifi_driver=$(echo "${{ github.event.inputs.WIFI_DRIVER }}" | sed -E 's/^(v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
