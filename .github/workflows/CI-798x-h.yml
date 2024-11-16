@@ -21,7 +21,7 @@ on:
         default: 'xr30-emmc'
         required: true
         type: choice
-        options: [off_false, xr30, xr30-emmc]
+        options: [off_false, xr30, xr30-emmc, sl3000_emmc]
       WIFI_DRIVER:
         description: '选择WiFi驱动程序'
         required: true
@@ -220,6 +220,10 @@ jobs:
               rm -rf ./tmp* ./.config*
               cat $GITHUB_WORKSPACE/Config/xr30_rax3000m_emmc/xr30_rax3000m_emmc.config >> .config                       
               echo "使用xr30_emmc配置文件"
+          elif [[ $WRT_USB_EMMC == "sl3000_emmc" ]] ; then
+              rm -rf ./tmp* ./.config*
+              cat $GITHUB_WORKSPACE/Config/sl_3000/sl_3000_emmc.txt >> .config                       
+              echo "使用sl_3000_emmc配置文件"
           elif [[ $WRT_USB_EMMC == "off_false" ]] ; then
               cat $GITHUB_WORKSPACE/Config/360t7/360t7.txt >> .config
               echo "使用360t7配置文件"
