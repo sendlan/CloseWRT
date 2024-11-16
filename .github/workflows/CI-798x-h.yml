@@ -196,7 +196,8 @@ jobs:
               sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/lgs2007m/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
               echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
           fi
-           
+          cp $GITHUB_WORKSPACE/Config/all/h-add-sl3000.diff h-add-sl3000.diff
+          git apply h-add-sl3000.diff
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
           
