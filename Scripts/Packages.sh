@@ -47,6 +47,7 @@ UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall-packages" "main"
 #UPDATE_PACKAGE "luci-app-passwall" "kenzok8/small" "master"
 
 #UPDATE_PACKAGE "ssr-plus" "fw876/helloworld" "master"
+UPDATE_PACKAGE "luci-app-istore" "linkease/istore" "main"
 
 UPDATE_PACKAGE "luci-app-aliyundrive-webdav" "messense/aliyundrive-webdav" "main" "pkg"
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5"
