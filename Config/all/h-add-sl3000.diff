@@ -4,10 +4,10 @@
  .../boot/dts/mediatek/mt7981-sl-3000-emmc.dts      | 176 ++++++++++++++++
  .../arm64/boot/dts/mediatek/mt7981-sl-3000.dts     | 228 +++++++++++++++++++++
  target/linux/mediatek/image/mt7981.mk              |  29 +++
- .../mt7981/base-files/etc/board.d/02_network       |   6 +
+ .../mt7981/base-files/etc/board.d/02_network       |  11 +
  .../base-files/lib/preinit/90_extract_caldata      |   1 +
  .../mt7981/base-files/lib/upgrade/platform.sh      |   3 +
- 9 files changed, 450 insertions(+)
+ 9 files changed, 455 insertions(+)
 
 diff --git a/defconfig/mt7981-ax3000.config b/defconfig/mt7981-ax3000.config
 index f23812f..3f272b3 100644
@@ -514,7 +514,7 @@ index 79dfe1f..b3bb8d8 100644
    DEVICE_VENDOR := H3C
    DEVICE_MODEL := NX30PRO
 diff --git a/target/linux/mediatek/mt7981/base-files/etc/board.d/02_network b/target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
-index ae85c00..71556ad 100755
+index ae85c00..4b89a74 100755
 --- a/target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
 +++ b/target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
 @@ -41,6 +41,11 @@ mediatek_setup_interfaces()
@@ -529,11 +529,23 @@ index ae85c00..71556ad 100755
  	*cetron,ct3003*)
  		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
  		ucidef_add_switch "switch0" \
-@@ -293,6 +298,7 @@ mediatek_setup_macs()
+@@ -210,6 +215,11 @@ mediatek_setup_macs()
+ 		label_mac=$lan_mac
+ 		local wifi_mac="$(mtd_get_mac_binary $part_name 0x04)"
+ 		;;
++	sl,3000-emmc)
++		local lan_mac=$(mmc_get_mac_binary factory 0x4)
++		wan_mac=$(mmc_get_mac_binary factory 0xa)
++		wifi_mac=$(macaddr_add $lan_mac -2)
++		;;
+ 	cmcc,xr30-emmc|\
+ 	cmcc,rax3000m-emmc)
+ 		lan_mac=$(mmc_get_mac_binary factory 0x2a)
+@@ -293,6 +303,7 @@ mediatek_setup_macs()
  			echo "MacAddress=$b1mac" >> ${b1dat}
  		fi
  		;;
-+	*sl,3000* |\
++	sl,3000 |\
  	*newland,nl-wr8103*)
  		local wifi_mac=$(mtd_get_mac_binary Factory 0x4)
  		lan_mac=$(macaddr_add $wifi_mac -1)
