@@ -198,7 +198,8 @@ jobs:
           fi
           cp $GITHUB_WORKSPACE/Config/all/h-add-sl3000.diff h-add-sl3000.diff
           cp $GITHUB_WORKSPACE/Config/all/spinor/1020-v2-spi-nor-BY25Q256FS.patch 1020-v2-spi-nor-BY25Q256FS.patch
-          git apply h-add-sl3000.diff 1020-v2-spi-nor-BY25Q256FS.patch
+          git apply h-add-sl3000.diff
+          git apply git apply h-add-sl3000.diff
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
           
