@@ -196,10 +196,12 @@ jobs:
               sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/lgs2007m/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
               echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
           fi
+          # 应用补丁
           cp $GITHUB_WORKSPACE/Config/all/h-add-sl3000.diff h-add-sl3000.diff
-          cp $GITHUB_WORKSPACE/Config/all/spinor/1020-v2-spi-nor-BY25Q256FS.patch 1020-v2-spi-nor-BY25Q256FS.patch
           git apply h-add-sl3000.diff
-          git apply git apply h-add-sl3000.diff
+          # 添加补丁
+          cp $GITHUB_WORKSPACE/Config/all/spinor/1020-v2-spi-nor-BY25Q256FS.patch ./target/linux/mediatek/patches-5.41020-v2-spi-nor-BY25Q256FS.patch
+          
           ./scripts/feeds update -a
           ./scripts/feeds install -a          
           
