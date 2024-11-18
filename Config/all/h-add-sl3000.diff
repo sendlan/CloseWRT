@@ -47,7 +47,7 @@ index 5607688..8fccf67 100755
  	h3c,nx30pro |\
 diff --git a/target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-sl-3000-emmc.dts b/target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-sl-3000-emmc.dts
 new file mode 100644
-index 0000000..1252e3f
+index 0000000..cdaa6a2
 --- /dev/null
 +++ b/target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-sl-3000-emmc.dts
 @@ -0,0 +1,267 @@
@@ -320,7 +320,7 @@ index 0000000..1252e3f
 +};
 diff --git a/target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-sl-3000.dts b/target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-sl-3000.dts
 new file mode 100644
-index 0000000..9275b3a
+index 0000000..98db141
 --- /dev/null
 +++ b/target/linux/mediatek/files-5.4/arch/arm64/boot/dts/mediatek/mt7981-sl-3000.dts
 @@ -0,0 +1,228 @@
