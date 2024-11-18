@@ -1,0 +1,27 @@
+From: David Bauer <mail@david-bauer.net>
+Date: Thu, 11 Feb 2021 19:57:26 +0100
+Subject: [PATCH] mtd: spi-nor: add support for Winbond BY25Q256
+
+The Winbond BY25Q256 is a 256mb SPI-NOR chip. It supports 4K sectors as
+well as block protection and Dual-/Quad-read.
+
+Tested on: Ubiquiti UniFi 6 LR
+
+Signed-off-by: David Bauer <mail@david-bauer.net>
+
+Ref: https://patchwork.ozlabs.org/project/linux-mtd/patch/20210213151047.11700-1-mail@david-bauer.net/
+
+--- a/drivers/mtd/spi-nor/spi-nor.c
++++ b/drivers/mtd/spi-nor/spi-nor.c
+@@ -2577,6 +2577,11 @@ static const struct flash_info spi_nor_i
+	{ "XM25QH128A", INFO(0x207018, 0, 64 * 1024, 256, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+	{ "XM25QH128C", INFO(0x204018, 0, 64 * 1024, 256, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+
++	/* BOYA Technology (zhuhai) Limited */
++	{ "BY25Q64ES", INFO(0x684017, 0, 64 * 1024, 128, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
++	{ "BY25Q128AS", INFO(0x684018, 0, 64 * 1024, 256, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
++	{ "BY25Q256FS", INFO(0x684919, 0, 64 * 1024, 512, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ | SPI_NOR_4B_OPCODES) },
++
+	/* XTX Technology (Shenzhen) Limited */
+	{ "xt25f128b", INFO(0x0B4018, 0, 64 * 1024, 256, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+	{ },
