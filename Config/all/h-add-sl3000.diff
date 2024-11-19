@@ -284,7 +284,7 @@ index 0000000..cdaa6a2
 +				groups = "spi1_1";
 +			};
 +		};
-+		
++
 +	spi2_flash_pins: spi2-pins {
 +		mux {
 +			function = "spi";
@@ -388,7 +388,7 @@ index 0000000..98db141
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +	};
-+	
++
 +	nmbm_spim_nand {
 +		compatible = "generic,nmbm";
 +		#address-cells = <1>;
