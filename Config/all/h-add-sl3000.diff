@@ -616,7 +616,7 @@ index ae85c00..2a5616a 100755
 +	sl,3000-emmc)
 +		lan_mac=$(mmc_get_mac_binary factory 0x4)
 +		wan_mac=$(mmc_get_mac_binary factory 0xa)
-+		wifi_mac=$(macaddr_add $lan_mac 1)
++		wifi_mac=$(macaddr_add $lan_mac -2)
 +		;;
  	cmcc,xr30-emmc|\
  	cmcc,rax3000m-emmc)
