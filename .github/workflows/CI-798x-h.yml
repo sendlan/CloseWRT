@@ -302,6 +302,7 @@ jobs:
                 # 将文本内容写入02_network
                 sed -i '/mediatek_setup_macs()/,/\};/ {/cmcc,rax3000m-emmc)/ {n;n;n;r temp_insert.txt
                 }}' target/linux/mediatek/mt7981/base-files/etc/board.d/02_network
+                echo "固定WiFi MAC地址"
             fi
             
       - name: 设置 dockerman 容器
