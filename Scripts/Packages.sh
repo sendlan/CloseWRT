@@ -64,6 +64,7 @@ UPDATE_PACKAGE "luci-app-lucky" "gdy666/luci-app-lucky" "main"
 UPDATE_PACKAGE "netspeedtest" "sirpdboy/netspeedtest" "master"
 UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
 UPDATE_PACKAGE "luci-app-wechatpush" "tty228/luci-app-wechatpush" "master"
+UPDATE_PACKAGE "luci-app-iptvhelper" "riverscn/openwrt-iptvhelper" "master"
 UPDATE_PACKAGE "luci-app-mwan3helper-chinaroute" "padavanonly/luci-app-mwan3helper-chinaroute" "main"
 
 
