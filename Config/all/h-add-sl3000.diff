@@ -66,7 +66,7 @@ index 0000000..17f8857
 +#include "mt7981.dtsi"
 +
 +/ {
-+	model = "SL-3000 eMMC (Tenbay WR3000K)";
++	model = "SL-3000 eMMC";
 +	compatible = "sl,3000-emmc", "mediatek,mt7981";
 +
 +	chosen {

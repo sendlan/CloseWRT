@@ -190,12 +190,16 @@ jobs:
               # 将默认的 packages 和 luci 仓库地址替换为 NekokeCore 的仓库地址
               sed -i 's|src-git-full packages https://github.com/immortalwrt/packages.git;openwrt-21.02|src-git-full packages https://github.com/NekokeCore/immortalwrt-mt798x-packages.git;openwrt-21.02|' feeds.conf.default
               sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/NekokeCore/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
+              echo >> feeds.conf.default
+              echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
               echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
               echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
               echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
           elif [[ $WRT_FEEDS == "lgs2007m" ]] ; then
               sed -i 's|src-git-full packages https://github.com/immortalwrt/packages.git;openwrt-21.02|src-git-full packages https://github.com/lgs2007m/immortalwrt-mt798x-packages.git;openwrt-21.02|' feeds.conf.default
               sed -i 's|src-git-full luci https://github.com/immortalwrt/luci.git;openwrt-21.02|src-git-full luci https://github.com/lgs2007m/immortalwrt-mt798x-luci.git;openwrt-21.02|' feeds.conf.default
+              echo >> feeds.conf.default
+              echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default    
               echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
               echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
               echo "修改feeds.conf.default源为 ${WRT_FEEDS}"
